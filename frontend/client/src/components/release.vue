@@ -1,0 +1,341 @@
+<template>
+  <div>
+    <b-modal
+      ref="editProductModal"
+      id="product-update-modal"
+      title="Update"
+      hide-footer
+    >
+      <b-form @submit="onSubmitUpdate" @reset="onCancelUpdate" class="w-100">
+        <b-form-group label="အရေအတွက်:">
+          <b-form-input
+            type="text"
+            v-model="editForm.count"
+            oninput="value=value.replace(/\D/g,'')"
+            required
+          ></b-form-input>
+        </b-form-group>
+        <b-button-group>
+          <b-button type="submit" variant="primary">Update</b-button>
+          <b-button type="reset" variant="danger">Cancel</b-button>
+        </b-button-group>
+      </b-form>
+    </b-modal>
+    <div class="container-fluid">
+      <div class="row">
+        <div
+          class="container pt-4 col-md-12 "
+          style="box-shadow: 0 0 10px 0 rgba(0, 0, 0, .1);"
+        >
+          <form>
+            <!-- function: “TypeError: Cannot read property 'type' of undefined” -->
+            <template v-if="orderList[0]">
+              <h3 class="pb-3">订单信息</h3>
+              <div class="form-row">
+                <div class="form-row col-md-6">
+                  <p>订单编号：</p>
+                  <p>{{ orderList[0].order_id }}</p>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-row col-md-6">
+                  <p>创建日期：</p>
+                  <p>{{ orderList[0].datetime }}</p>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-row col-12">
+                  <p>客户：</p>
+                  <p>{{ orderList[0].customer_id }}</p>
+                  <p>{{ orderList[0].customer_name }}</p>
+                </div>
+              </div>
+            </template>
+            <table
+              class="table container-fluid"
+              style="word-break:break-all; word-wrap:break-all;"
+            >
+              <thead>
+                <tr>
+                  <b-row
+                    class="form-row"
+                    style="word-break:break-all; word-wrap:break-all;"
+                  >
+                    <th style="width:5%;">
+                      <input
+                        type="checkbox"
+                        @change="selectAll"
+                        v-model="allSelected"
+                      />
+                    </th>
+                    <th style="width:10%;">ID</th>
+                    <th style="width:20%;">P_Name</th>
+                    <th style="width:25%;">P_Detal</th>
+                    <th style="width:10%;">Count</th>
+                    <th style="width:10%;">Price</th>
+                    <th style="width:10%;">Total</th>
+                    <th style="width:10%;"></th>
+                  </b-row>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(product, index) in orderList"
+                  :key="index"
+                  style="white-space:nowrap;overflow:hidden"
+                >
+                  <b-row class="form-row">
+                    <td style="width:5%;">
+                      <input
+                        type="checkbox"
+                        v-model="selected"
+                        :value="product"
+                        number
+                      />
+                      <!-- :value="product"——>点击checkbox,把product装到selected[]里
+                      或者：selected[]里有一个product == 点击了该checkbox,这就是[全选]的原理-->
+                    </td>
+                    <td style="width:10%;">{{ product.product_id }}</td>
+                    <td style="width:20%;">{{ product.product_name }}</td>
+                    <td style="width:25%;">{{ product.product_detal }}</td>
+                    <td style="width:10%;">{{ product.count }}</td>
+                    <td style="width:10%;">{{ product.price }}</td>
+                    <td style="width:10%;">{{ product.subtotal }}</td>
+                    <td>
+                      <div style="width:10%;" class="btn-group" role="group">
+                        <button
+                          type="button"
+                          class="btn btn-warning btn-sm"
+                          v-b-modal.product-update-modal
+                          @click="editProduct(product)"
+                        >
+                          Update
+                        </button>
+                      </div>
+                    </td>
+                  </b-row>
+                </tr>
+              </tbody>
+            </table>
+            <button
+              type="submit"
+              class="btn btn-primary mb-4 mr-2 col-2 float-right"
+              v-b-modal.waybill-modal
+              @click="view_waybill"
+            >
+              确定
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <b-modal
+      ref="wayBillModal"
+      id="waybill-modal"
+      title="WayBill"
+      size="xl"
+      hide-footer
+    >
+      <template v-if="selected[0]">
+        <h3 class="pb-3">订单信息</h3>
+        <div class="form-row">
+          <div class="form-row col-md-6">
+            <p>订单编号：</p>
+            <p>{{ selected[0].order_id }}</p>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-row col-md-6">
+            <p>创建日期：</p>
+            <p>{{ selected[0].datetime }}</p>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-row col-12">
+            <p>客户：</p>
+            <p>{{ selected[0].customer_id }}</p>
+            <p>{{ selected[0].customer_name }}</p>
+          </div>
+        </div>
+        <table
+          class="table container-fluid"
+          style="word-break:break-all; word-wrap:break-all;"
+        >
+          <thead>
+            <tr>
+              <b-row class="ml-3 mr-3">
+                <th class="col-md-2">ID</th>
+                <th class="col-md-4">P_Name</th>
+                <th class="col-md-4">P_Detal</th>
+                <th class="col-md-2">Count</th>
+                <!-- <th class="col-md-1">Price</th>
+              <th class="col-md-3">Total</th> -->
+              </b-row>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(product, index) in selected" :key="index">
+              <b-row class="ml-3 mr-3">
+                <td class="col-md-2">{{ product.product_id }}</td>
+                <td class="col-md-4">{{ product.product_name }}</td>
+                <td class="col-md-4">{{ product.product_detal }}</td>
+                <td class="col-md-2">{{ product.count }}</td>
+                <!-- <td class="col-md-1">{{ product.price }}</td> -->
+                <!-- <td class="col-md-1">{{ product.subtotal }}</td> -->
+              </b-row>
+            </tr>
+          </tbody>
+          <button
+            type="submit"
+            class="btn btn-primary mb-4 mr-2 col-2 float-right"
+            @click="submit_waybill(selected[0].order_id)"
+          >
+            发起订单
+          </button>
+        </table>
+      </template>
+    </b-modal>
+
+    <span>Selected Datas: {{ selected }}</span>
+    <pre>transfer: {{ transfer }}</pre>
+    <pre>editForm = {{ editForm }}</pre>
+    <pre>orderList = {{ orderList }}</pre>
+    <pre>releasedGood = {{ releasedGood }}</pre>
+  </div>
+</template>
+<script>
+import axios from "axios";
+export default {
+  data() {
+    return {
+      orderList: [],
+
+      selected: [], //已选中的数据
+      allSelected: false, //是否是全选。false=默认不选中。
+
+      editForm: {
+        product_id: "",
+        product_name: "",
+        product_detal: "",
+        count: "",
+        price: "",
+        subtotal: ""
+      },
+      releasedGood: [],
+
+      transfer: []
+    };
+  },
+  computed: {},
+
+  created() {
+    this.fetchOrder();
+  },
+  // mounted(){
+  //   this.fetchOrder();
+  // },
+  // 监听data数据，数据改变时触发
+  watch: {
+    selected: function() {
+      if (this.selected.length == this.orderList.length) {
+        this.allSelected = true;
+      } else {
+        this.allSelected = false;
+      }
+    }
+  },
+  methods: {
+    fetchOrder() {
+      //拿到查询字段，订单的id后进行axios请求
+      var order_id = this.$route.query.orderId;
+      console.log(order_id)
+      const path = `http://localhost:4000/orders/${order_id}`;
+      axios.put(path).then(
+        res => {
+          console.log(res)
+          this.orderList = res.data;
+          this.releasedGood = res.data;
+        },
+        error => {
+          console.log(error);
+        }
+      );
+    },
+    view_waybill(evt) {
+      evt.preventDefault();
+    },
+    submit_waybill() {
+      var send_info = {
+        waybill: this.selected
+      };
+      const path = "http://localhost:4000/waybill";
+      axios.post(path,send_info).then(
+        res => {
+          console.log(res);
+          this.$refs.wayBillModal.hide();
+        },
+        error => {
+          console.log(error);
+        }
+      );
+    },
+    // submit_waybill(order_id) {
+    //   console.log(order_id)
+    //   var send_info = {
+    //     waybill: this.selected
+    //   };
+    //   //拿到查询字段，订单的id后进行axios请求
+    //   const path = `http://localhost:4000/waybill`;
+    //   axios.post(path, send_info).then(
+    //     res => {
+    //       console.log(res);
+    //     },
+    //     error => {
+    //       console.log(error);
+    //     }
+    //   );
+    // },
+    // MissedOrder() {
+    //   this.transfer.push(this.selected);
+    //   this.$store.commit("orders/setOrders", {
+    //     missed_orders: this.transfer
+    //   });
+    // },
+
+    selectAll: function() {
+      this.selected = [];
+
+      if (this.allSelected) {
+        //   for (let index = 0; index < this.orderList.length; index++) {
+        //       this.selected.push(this.orderList[index].product_id.toString());
+        //       console.log(this.selected)
+        //   }    //只选择product_id
+        this.selected = this.orderList; //选择orderListr[]里的全部数据
+      }
+    },
+
+    editProduct(product) {
+      this.editForm.product_id = product.product_id;
+      this.editForm.product_name = product.product_name;
+      this.editForm.product_detal = product.product_detal;
+      this.editForm.count = product.count;
+      this.editForm.price = product.price;
+      this.editForm.subtotal = product.subtotal;
+    },
+    // 提交编辑好的数据
+    onSubmitUpdate(evt) {
+      evt.preventDefault();
+      this.$refs.editProductModal.hide();
+      const index = this.orderList.findIndex(
+        ele => ele.product_id == this.editForm.product_id
+      );
+      this.orderList[index].count = this.editForm.count;
+    },
+    onCancelUpdate(evt) {
+      evt.preventDefault();
+      this.$refs.editProductModal.hide();
+    }
+  }
+};
+</script>
