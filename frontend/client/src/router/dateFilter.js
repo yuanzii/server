@@ -15,7 +15,7 @@ import moment from "moment"
 Vue.prototype.$moment = moment
 
 
-// 后台数据时间戳转换成日期格式
+// 后台数据时间13位戳转换成日期格式
 export function formatDate(datetime) {
     let date = new Date(datetime);
     let y = date.getFullYear();
@@ -24,7 +24,7 @@ export function formatDate(datetime) {
     let d = date.getDate();
     d = d < 10 ? "0" + d : d;
     let h = date.getHours();
-    let H = h-6 //得到的时间再减于6，这样就可以好排查<10的数+0了
+    let H = h-7 //得到的时间再减于7，这样就可以好排查<10的数+0了
     h = H < 10 ? "0" + H : H ;
     let m = date.getMinutes();
     m = m < 10 ? "0" + m : m;

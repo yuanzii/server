@@ -13,7 +13,7 @@
       onkeypress="return event.keyCode != 13;"
     >
       <b-row>
-        <b-form-group class="col-md-6" label="CustomerID:">
+        <b-form-group class="col-md-6" label="Customer Id-Name:">
           <b-form-input
             type="text"
             v-model="customers.customer_id"
