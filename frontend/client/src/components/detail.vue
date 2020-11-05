@@ -124,10 +124,12 @@ export default {
 
   methods: {
     fetchOrder() {
-      var order_id = this.$route.query.orderId;
-      console.log(order_id);
-      const path = `http://localhost:4000/orders/${order_id}`;
-      axios.put(path).then(
+      var send_info = {
+        order_id : this.$route.query.orderId
+      }
+      console.log(send_info);
+      const path = "http://localhost:4000/orders";
+      axios.put(path,send_info).then(
         res => {
           this.orderList = res.data;
         },

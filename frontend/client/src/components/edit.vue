@@ -6,8 +6,10 @@
       title="Update"
       hide-footer
     >
-    
       <b-form @submit="onSubmitUpdate" @reset="onCancelUpdate" class="w-100">
+        <div v-if="warning">
+          <h4>⚠ 不能填超过订单数量的数字!</h4>
+        </div>
         <b-form-group label="အရေအတွက်:">
           <b-form-input
             type="text"
@@ -16,9 +18,6 @@
             v-on:change="limited()"
             required
           ></b-form-input>
-          <div v-if="warning">
-            <h4>⚠ 不能填超过订单数量的数字!</h4>
-          </div>
         </b-form-group>
         <b-button-group>
           <b-button type="submit" variant="primary">Update</b-button>
@@ -33,8 +32,9 @@
           class="container pt-4 col-md-12 "
           style="box-shadow: 0 0 10px 0 rgba(0, 0, 0, .1);"
         >
-        <form v-if="show_message">
-          <h1>订单提交完成✔</h1></form>
+          <form v-if="show_message">
+            <h1>订单提交完成✔</h1>
+          </form>
           <form v-if="show_form">
             <!-- function: “TypeError: Cannot read property 'type' of undefined” -->
             <template v-if="orderList[0]">
@@ -220,11 +220,11 @@ import axios from "axios";
 export default {
   data() {
     return {
-      show_form:true,
-      show_message:false,
+      show_form: true,
+      show_message: false,
 
       orderList: [],
-      warning : false,
+      warning: false,
 
       selected: [], //已选中的数据
       allSelected: false, //是否是全选。false=默认不选中。
@@ -247,7 +247,7 @@ export default {
         // {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
       ],
       editCount: [],
-      releasedGood: [],
+      releasedGood: []
     };
   },
   computed: {},
@@ -266,7 +266,7 @@ export default {
       } else {
         this.allSelected = false;
       }
-    },
+    }
   },
   methods: {
     fetchOrder() {
@@ -279,7 +279,9 @@ export default {
           console.log(res);
           this.orderList = res.data;
           for (let index = 0; index < this.orderList.length; index++) {
-            this.originalCount[index].product_id = this.orderList[index].product_id;
+            this.originalCount[index].product_id = this.orderList[
+              index
+            ].product_id;
             this.originalCount[index].count = this.orderList[index].count;
           }
         },
@@ -288,18 +290,17 @@ export default {
         }
       );
     },
-    limited(){
+    limited() {
       const index = this.originalCount.findIndex(
         ele => ele.product_id == this.editForm.product_id
       );
-      if (this.editForm.count>this.originalCount[index].count) {
+      if (this.editForm.count > this.originalCount[index].count) {
         this.warning = true;
-        this.editForm.count=""
+        this.editForm.count = "";
       } else {
         this.warning = false;
-        this.editForm.count
+        this.editForm.count;
       }
-      
     },
     view_waybill(evt) {
       evt.preventDefault();
@@ -313,22 +314,45 @@ export default {
         res => {
           console.log(res);
           this.$refs.wayBillModal.hide();
-          // const index = this.orderList.findIndex(
-          //   ele => ele.product_id == this.originalCount.product_id
-          // );
-          // console.log(index)
-          this.orderList[0].count = this.originalCount[0].count - this.orderList[0].count;
-          console.log(this.orderList[0].count)
-          this.initOrder();
-          this.show_form =false;
-          this.show_message =true;
+
+          for (let x = 0; x < this.selected.length; x++) {
+            for (let y = 0; y < this.originalCount.length; y++) {
+              if (
+                this.originalCount[y].product_id == this.selected[x].product_id
+              ) {
+                this.selected[x].count =
+                  this.originalCount[y].count - this.selected[x].count;
+              }
+            }
+            if (this.selected[x].count == 0) {
+              this.selected.splice(x, 1);
+            }
+          }
+          this.released_waybill();
+          this.show_form = false;
+          this.show_message = true;
         },
         error => {
           console.log(error);
         }
       );
     },
-    initOrder(){
+    released_waybill() {
+      var send_info = {
+        released_waybill: this.orderList
+      };
+      const path = "http://localhost:4000/waybill";
+      axios.put(path, send_info).then(
+        res => {
+          console.log(res);
+          console.log("PUT waybill");
+        },
+        error => {
+          console.log(error);
+        }
+      );
+    },
+    initOrder() {
       this.orderList = [];
     },
 

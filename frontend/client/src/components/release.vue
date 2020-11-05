@@ -99,18 +99,21 @@ export default {
   methods: {
     fetchOrder() {
       //拿到查询字段，订单的id后进行axios请求
-      var order_id = this.$route.query.orderId;
-      console.log(order_id);
-      const path = `http://localhost:4000/orders/${order_id}`;
-      axios.put(path).then(
+      var send_info = {
+        order_id : this.$route.query.orderId
+      }
+      console.log(send_info);
+      const path = "http://localhost:4000/orders";
+      axios.put(path,send_info).then(
         res => {
-          console.log(res);
           this.orderList = res.data;
         },
         error => {
           console.log(error);
         }
       );
+
+      this.loading = false;
     },
     onEditOrder(order_id) {
       let routeData = this.$router.resolve({

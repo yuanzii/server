@@ -70,7 +70,7 @@ def get_product():
         print("Error:出错啦！！！")
         return jsonify("")
 
-@user.route('/orders', methods=["POST", "GET"])
+@user.route('/orders', methods=["POST", "GET","PUT"])
 def all_orders():
     import db.psql as con
     import importlib
@@ -117,30 +117,45 @@ def all_orders():
             con.close()
             return F2002
 
+        if request.method == 'PUT':
+            print("PUT")
+            post_data = request.json
+            order_id = post_data.get("order_id")
+            G1001 = pd.read_sql("SELECT order_head.id,order_head.order_id,\
+                                order_head.customer_id,order_head.customer_name,order_head.total_amount,\
+                                order_head.datetime,order_goods.product_id,order_goods.product_name,\
+                                order_goods.product_detal,order_goods.count,order_goods.price,\
+                                order_goods.subtotal FROM order_head INNER JOIN order_goods\
+                                ON order_head.order_id=order_goods.order_id \
+                                WHERE (order_head.order_id='" + order_id + "')", con)
+            G2002 = G1001.to_json(orient="records")
+            con.close()
+            return (G2002)
+
     except Exception:
         return jsonify("")
 
-@user.route('/orders/<order_id>', methods=["PUT", "DELETE"])
-def single_order(order_id):
-    import db.psql as con
-    import importlib
-    importlib.reload(con)
-    from db.psql import con
+# @user.route('/orders/<order_id>', methods=["PUT", "DELETE"])
+# def single_order(order_id):
+#     import db.psql as con
+#     import importlib
+#     importlib.reload(con)
+#     from db.psql import con
+#
+#     if request.method == 'PUT':
+#         print("PUT")
+#         G1001 = pd.read_sql("SELECT order_head.id,order_head.order_id,\
+#                     order_head.customer_id,order_head.customer_name,order_head.total_amount,\
+#                     order_head.datetime,order_goods.product_id,order_goods.product_name,\
+#                     order_goods.product_detal,order_goods.count,order_goods.price,\
+#                     order_goods.subtotal FROM order_head INNER JOIN order_goods\
+#                     ON order_head.order_id=order_goods.order_id \
+#                     WHERE (order_head.order_id='" + order_id + "')", con)
+#         G2002 = G1001.to_json(orient="records")
+#         con.close()
+#         return (G2002)
 
-    if request.method == 'PUT':
-        print("PUT")
-        G1001 = pd.read_sql("SELECT order_head.id,order_head.order_id,\
-                    order_head.customer_id,order_head.customer_name,order_head.total_amount,\
-                    order_head.datetime,order_goods.product_id,order_goods.product_name,\
-                    order_goods.product_detal,order_goods.count,order_goods.price,\
-                    order_goods.subtotal FROM order_head INNER JOIN order_goods\
-                    ON order_head.order_id=order_goods.order_id \
-                    WHERE (order_head.order_id='" + order_id + "')", con)
-        G2002 = G1001.to_json(orient="records")
-        con.close()
-        return (G2002)
-
-@user.route('/waybill', methods=["POST","GET"])
+@user.route('/waybill', methods=["POST","GET","PUT"])
 def waybill():
     import db.psql as con
     import importlib
@@ -153,12 +168,12 @@ def waybill():
         waybill = post_data.get("waybill")
         nowTime = datetime.datetime.now().strftime("%Y%m%d%H%M%S")  # 生成当前时间
         randomNum = random.randint(0, 10000)  # 生成的随机整数n，其中0<=n<=10000
-        if randomNum <= 1000:
-            randomNum = str(0) + str(randomNum)
-        elif randomNum <= 100:
-            randomNum = str(00) + str(randomNum)
-        elif randomNum <= 10:
+        if randomNum < 10:
             randomNum = str(000) + str(randomNum)
+        elif randomNum < 100:
+            randomNum = str(00) + str(randomNum)
+        elif randomNum < 1000:
+            randomNum = str(0) + str(randomNum)
         uniqueNum = str(nowTime) + str(randomNum)
         print(uniqueNum)
         order_create_time = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
@@ -172,6 +187,21 @@ def waybill():
             product_name,product_detail,count,order_id,order_create_time) VALUES (%(waybill_id)s,
             %(customer_id)s,%(customer_name)s, %(product_id)s,%(product_name)s,%(product_detal)s,
             %(count)s,%(order_id)s,%(order_create_time)s)""", waybill)
+
+        con.commit()
+        con.close()
+        return jsonify("")
+
+    if request.method == 'PUT':
+        print("PUT")
+        post_data = request.json
+        released_waybill = post_data.get("released_waybill")
+
+        cur = con.cursor()
+        cur.executemany("""INSERT INTO released_waybill(order_id,customer_id,customer_name,product_id,
+            product_name,product_detail,count) VALUES (%(order_id)s,
+            %(customer_id)s,%(customer_name)s, %(product_id)s,%(product_name)s,%(product_detal)s,
+            %(count)s)""", released_waybill)
 
         con.commit()
         con.close()
