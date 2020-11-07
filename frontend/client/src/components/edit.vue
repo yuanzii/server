@@ -272,7 +272,7 @@ export default {
     fetchOrder() {
       //拿到查询字段，订单的id后进行axios请求
       var order_id = this.$route.query.orderId;
-      console.log(order_id);
+    console.log(order_id);
       const path = `http://localhost:4000/orders/${order_id}`;
       axios.put(path).then(
         res => {
@@ -360,10 +360,6 @@ export default {
       this.selected = [];
 
       if (this.allSelected) {
-        //   for (let index = 0; index < this.orderList.length; index++) {
-        //       this.selected.push(this.orderList[index].product_id.toString());
-        //       console.log(this.selected)
-        //   }    //只选择product_id
         this.selected = this.orderList; //选择orderListr[]里的全部数据
       }
     },
