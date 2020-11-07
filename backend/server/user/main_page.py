@@ -101,6 +101,10 @@ def all_orders():
             count,price,subtotal)VALUES (%(order_id)s,%(product_id)s, %(product_name)s, %(product_detal)s,
             %(count)s, %(price)s, %(subtotal)s)""", products)
 
+            cur.executemany("""INSERT INTO released_waybill(order_id,product_id,product_name,product_detal,
+                        count,price)VALUES (%(order_id)s,%(product_id)s, %(product_name)s, %(product_detal)s,
+                        %(count)s, %(price)s)""", products)
+
             con.commit()
             con.close()
             return jsonify("")
@@ -137,35 +141,41 @@ def all_orders():
 
 # def remove_waybill():
 
-@user.route('/orders/<order_id>', methods=["PUT", "DELETE"])
+@user.route('/orders/<order_id>', methods=["GET", "PUT"])
 def single_order(order_id):
     import db.psql as con
     import importlib
     importlib.reload(con)
     from db.psql import con
 
-    if request.method == 'PUT':
-        print("PUT")
-        post_data = request.json
-        released_waybill = post_data.get("released_waybill")
-        # remove_waybill(order_id)
-        cur = con.cursor()
-        cur.executemany("""delete `order_head`,`order_goods` from `order_head` \
-        INNER JOIN `order_goods` ON `order_head`.`order_id`=`order_goods`.`order_id` \
-        WHERE (`order_head`.`order_id`=`20201102140431`)""")
-
-        con.commit()
-        con.close()
+    if request.method == 'GET':
+        print("GET")
         G1001 = pd.read_sql("SELECT order_head.id,order_head.order_id,\
                     order_head.customer_id,order_head.customer_name,order_head.total_amount,\
-                    order_head.datetime,order_goods.product_id,order_goods.product_name,\
-                    order_goods.product_detal,order_goods.count,order_goods.price,\
-                    order_goods.subtotal FROM order_head INNER JOIN order_goods\
-                    ON order_head.order_id=order_goods.order_id \
+                    order_head.datetime,released_waybill.product_id,released_waybill.product_name,\
+                    released_waybill.product_detal,released_waybill.count,released_waybill.price,\
+                    released_waybill.subtotal FROM order_head INNER JOIN released_waybill\
+                    ON order_head.order_id=released_waybill.order_id \
                     WHERE (order_head.order_id='" + order_id + "')", con)
         G2002 = G1001.to_json(orient="records")
         con.close()
         return (G2002)
+
+    if request.method == 'PUT':
+        print("PUT")
+        post_data = request.json
+        released_waybill = post_data.get("released_waybill")
+
+        cur = con.cursor()
+        cur.execute("DELETE FROM released_waybill a USING order_head b WHERE a.order_id=b.order_id AND b.order_id = '" + str(order_id) + "'")
+
+        cur.executemany("INSERT INTO released_waybill(order_id,product_id,product_name,product_detal,\
+                        count,price)VALUES (%(order_id)s,%(product_id)s, %(product_name)s, %(product_detal)s,\
+                        %(count)s, %(price)s)", released_waybill)
+
+        con.commit()
+        con.close()
+        return jsonify("")
 
 @user.route('/waybill', methods=["POST","GET","PUT"])
 def waybill():
@@ -187,20 +197,21 @@ def waybill():
     # con.close()
     # return (G2002)
 
-    if request.method == 'PUT':
-        print("PUT")
-        post_data = request.json
-        released_waybill = post_data.get("released_waybill")
-
-        cur = con.cursor()
-        cur.executemany("""INSERT INTO released_waybill(order_id,customer_id,customer_name,product_id,
-            product_name,product_detail,count) VALUES (%(order_id)s,
-            %(customer_id)s,%(customer_name)s, %(product_id)s,%(product_name)s,%(product_detal)s,
-            %(count)s)""", released_waybill)
-
-        con.commit()
-        con.close()
-        return jsonify("")
+    # if request.method == 'PUT':
+    #     print("PUT")
+    #     post_data = request.json
+    #     released_waybill = post_data.get("released_waybill")
+    #
+    #     cur = con.cursor()
+    #     cur.executemany("DELETE FROM released_waybill a USING order_head b WHERE a.order_id=b.order_id AND a.order_id = 20200814134312")
+    #
+    #     cur.executemany("INSERT INTO released_waybill(order_id,product_id,product_name,product_detal,\
+    #                     count,price)VALUES (%(order_id)s,%(product_id)s, %(product_name)s, %(product_detal)s,\
+    #                     %(count)s, %(price)s)", released_waybill)
+    #
+    #     con.commit()
+    #     con.close()
+    #     return jsonify("")
 
     if request.method == 'POST':
         print("POST")

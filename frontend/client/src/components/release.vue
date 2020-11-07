@@ -43,9 +43,8 @@
                       <th style="width:10%;">ID</th>
                       <th style="width:25%;">P_Name</th>
                       <th style="width:30%;">P_Detal</th>
-                      <th style="width:10%;">Count</th>
-                      <th style="width:10%;">Price</th>
-                      <th style="width:10%;">Total</th>
+                      <th style="width:15%;">Count</th>
+                      <th style="width:15%;">Price</th>
                     </b-row>
                   </tr>
                 </thead>
@@ -60,9 +59,8 @@
                       <td style="width:10%;">{{ product.product_id }}</td>
                       <td style="width:25%;">{{ product.product_name }}</td>
                       <td style="width:30%;">{{ product.product_detal }}</td>
-                      <td style="width:10%;">{{ product.count }}</td>
-                      <td style="width:10%;">{{ product.price }}</td>
-                      <td style="width:10%;">{{ product.subtotal }}</td>
+                      <td style="width:15%;">{{ product.count }}</td>
+                      <td style="width:15%;">{{ product.price }}</td>
                     </b-row>
                   </tr>
                 </tbody>
@@ -96,15 +94,16 @@ export default {
   created() {
     this.fetchOrder();
   },
+  // activated: function() {
+  //   console.log("activate");
+  //   this.fetchOrder();
+  // },
   methods: {
     fetchOrder() {
       //拿到查询字段，订单的id后进行axios请求
-      var send_info = {
-        order_id : this.$route.query.orderId
-      }
-      console.log(send_info);
-      const path = "http://localhost:4000/orders";
-      axios.put(path,send_info).then(
+      var order_id = this.$route.query.orderId;
+      const path = `http://localhost:4000/orders/${order_id}`;
+      axios.get(path).then(
         res => {
           this.orderList = res.data;
         },
@@ -112,9 +111,23 @@ export default {
           console.log(error);
         }
       );
-
-      this.loading = false;
     },
+    // fetchOrder() {
+    //   //拿到查询字段，订单的id后进行axios请求
+    //   var send_info = {
+    //     order_id : this.$route.query.orderId
+    //   }
+    //   console.log(send_info);
+    //   const path = "http://localhost:4000/orders";
+    //   axios.put(path,send_info).then(
+    //     res => {
+    //       this.orderList = res.data;
+    //     },
+    //     error => {
+    //       console.log(error);
+    //     }
+    //   );
+    // },
     onEditOrder(order_id) {
       let routeData = this.$router.resolve({
         path: "/all_orders/edit",

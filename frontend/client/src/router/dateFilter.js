@@ -24,8 +24,13 @@ export function formatDate(datetime) {
     let d = date.getDate();
     d = d < 10 ? "0" + d : d;
     let h = date.getHours();
-    let H = h-7 //得到的时间再减于7，这样就可以好排查<10的数+0了
-    h = H < 10 ? "0" + H : H ;
+    if (h == "00") {
+        let H = 24-7  //24点显示0点
+        h = H < 10 ? "0" + H : H ;
+    } else {
+        let H = h-7 //得到的时间再减于7，这样就可以好排查<10的数+0了
+        h = H < 10 ? "0" + H : H ;
+    }
     let m = date.getMinutes();
     m = m < 10 ? "0" + m : m;
     let s = date.getSeconds();

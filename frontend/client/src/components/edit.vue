@@ -77,11 +77,10 @@
                       />
                     </th>
                     <th style="width:10%;">ID</th>
-                    <th style="width:20%;">P_Name</th>
-                    <th style="width:25%;">P_Detal</th>
+                    <th style="width:25%;">P_Name</th>
+                    <th style="width:30%;">P_Detal</th>
                     <th style="width:10%;">Count</th>
                     <th style="width:10%;">Price</th>
-                    <th style="width:10%;">Total</th>
                     <th style="width:10%;"></th>
                   </b-row>
                 </tr>
@@ -104,11 +103,10 @@
                       或者：selected[]里有一个product == 点击了该checkbox,这就是[全选]的原理-->
                     </td>
                     <td style="width:10%;">{{ product.product_id }}</td>
-                    <td style="width:20%;">{{ product.product_name }}</td>
-                    <td style="width:25%;">{{ product.product_detal }}</td>
+                    <td style="width:25%;">{{ product.product_name }}</td>
+                    <td style="width:30%;">{{ product.product_detal }}</td>
                     <td style="width:10%;">{{ product.count }}</td>
                     <td style="width:10%;">{{ product.price }}</td>
-                    <td style="width:10%;">{{ product.subtotal }}</td>
                     <td>
                       <div style="width:10%;" class="btn-group" role="group">
                         <button
@@ -272,9 +270,8 @@ export default {
     fetchOrder() {
       //拿到查询字段，订单的id后进行axios请求
       var order_id = this.$route.query.orderId;
-    console.log(order_id);
       const path = `http://localhost:4000/orders/${order_id}`;
-      axios.put(path).then(
+      axios.get(path).then(
         res => {
           console.log(res);
           this.orderList = res.data;
@@ -329,7 +326,7 @@ export default {
             }
           }
           this.released_waybill();
-          this.show_form = false;
+          this.show_form = true;
           this.show_message = true;
         },
         error => {
@@ -338,10 +335,11 @@ export default {
       );
     },
     released_waybill() {
+      var order_id = this.$route.query.orderId;
       var send_info = {
         released_waybill: this.orderList
       };
-      const path = "http://localhost:4000/waybill";
+      const path = `http://localhost:4000/orders/${order_id}`;
       axios.put(path, send_info).then(
         res => {
           console.log(res);
