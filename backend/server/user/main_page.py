@@ -116,7 +116,7 @@ def all_orders():
             order_head.datetime,order_goods.product_id,order_goods.product_name,\
             order_goods.product_detal,order_goods.count,order_goods.price,\
             order_goods.subtotal FROM order_head INNER JOIN order_goods\
-            ON order_head.order_id=order_goods.order_id ', con)
+            ON order_head.order_id=order_goods.order_id order by id desc ', con)
             F2002 = F1001.to_json(orient="records")
             con.close()
             return F2002

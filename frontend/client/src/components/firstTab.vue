@@ -18,7 +18,7 @@
             type="text"
             v-model="customers.customer_id"
             @keyup.enter="c_change"
-            @keyup.delete="delete_customer"
+            @keyup.delete="deletide_customer_id"
             required
           ></b-form-input>
         </b-form-group>
@@ -26,6 +26,7 @@
           <b-form-input
             type="text"
             v-model="customers.customer_name"
+            @keyup.delete="deletide_customer_name"
             required
           ></b-form-input>
         </b-form-group>
@@ -36,7 +37,7 @@
             type="text"
             v-model="addProductForm.product_id"
             @keyup.enter="p_change"
-            @keyup.delete="delete_product"
+            @keyup.delete="delete_product_id"
             required
           ></b-form-input>
         </b-form-group>
@@ -44,13 +45,15 @@
           <b-form-input
             type="text"
             v-model="addProductForm.product_name"
+            @keyup.delete="delete_product_name"
             required
           ></b-form-input>
         </b-form-group>
-        <b-form-group class="col-md-3" label="P_Detal:">
+        <b-form-group class="col-md-3" label="P_Detail:">
           <b-form-input
             type="text"
             v-model="addProductForm.product_detal"
+            @keyup.delete="delete_product_detail"
             required
           ></b-form-input>
         </b-form-group>
@@ -147,13 +150,27 @@ export default {
           console.error(error);
         });
     },
-    delete_customer() {
+    deletide_customer_id() {
       this.customers.customer_name = "";
     },
-    delete_product() {
-      console.log("deleate");
+    deletide_customer_name() {
+      this.customers.customer_id = "";
+    },
+    delete_product_id() {
       this.addProductForm.product_name = "";
       this.addProductForm.product_detal = "";
+      this.addProductForm.price = "";
+      this.count_change();
+    },
+    delete_product_name() {
+      this.addProductForm.product_id = "";
+      this.addProductForm.product_detal = "";
+      this.addProductForm.price = "";
+      this.count_change();
+    },
+    delete_product_detail() {
+      this.addProductForm.product_id = "";
+      this.addProductForm.product_name = "";
       this.addProductForm.price = "";
       this.count_change();
     },

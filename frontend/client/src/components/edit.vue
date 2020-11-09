@@ -203,11 +203,11 @@
       </template>
     </b-modal>
 
+    <pre>originalCount = {{ originalCount }}</pre>
     <pre>warning = {{ warning }}</pre>
     <pre>show_form = {{ show_form }}</pre>
     <pre>show_message = {{ show_message }}</pre>
     <pre>orderList = {{ orderList }}</pre>
-    <pre>originalCount = {{ originalCount }}</pre>
     <pre>editCount = {{ editCount }}</pre>
     <span>Selected Datas: {{ selected }}</span>
     <pre>editForm = {{ editForm }}</pre>
@@ -253,9 +253,6 @@ export default {
   created() {
     this.fetchOrder();
   },
-  // mounted(){
-  //   this.fetchOrder();
-  // },
   // 监听data数据，数据改变时触发
   watch: {
     selected: function() {
@@ -282,11 +279,18 @@ export default {
         }
       );
     },
-    original_count(){
+    original_count() {
       for (let index = 0; index < this.orderList.length; index++) {
-            this.originalCount[index].product_id = this.orderList[index].product_id;
-            this.originalCount[index].count = this.orderList[index].count;
-          }
+        console.log(this.orderList[index])
+        if (this.orderList[index] == "") {
+          console.log("空数组");
+          this.originalCount.splice(index, 1);
+        } else {
+          console.log("没空")
+          this.originalCount[index].product_id = this.orderList[index].product_id;
+          this.originalCount[index].count = this.orderList[index].count;
+        }
+      }
     },
     limited() {
       const index = this.originalCount.findIndex(
@@ -324,10 +328,10 @@ export default {
             }
             if (this.selected[x].count == 0) {
               this.selected.splice(x, 1);
-              this.orderList = this.selected;
+              // this.orderList = this.selected;
             }
-            this.original_count();
           }
+          this.original_count();
           this.released_waybill();
           this.show_form = true;
           this.show_message = true;
@@ -347,6 +351,7 @@ export default {
         res => {
           console.log(res);
           console.log("PUT waybill");
+          this.original_count();
         },
         error => {
           console.log(error);
