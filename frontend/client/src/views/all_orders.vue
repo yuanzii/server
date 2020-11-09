@@ -22,7 +22,7 @@
       <tbody>
         <tr v-for="(product, index) in this.list" :key="index">
           <b-row class="ml-3 mr-3" style="margin-bottom:-0.5rem;">
-            <td style="width:5%;">{{ index }}</td>
+            <td style="width:5%;">{{ index+1 }}</td>
             <td style="width:15%;">{{ product.order_id }}</td>
             <td style="width:10%;">{{ product.customer_id }}</td>
             <td style="width:15%;">{{ product.customer_name }}</td>
@@ -95,11 +95,18 @@ export default {
         .get(path)
         .then(res => {
           console.log(res.data);
-          this.list = res.data;
+          this.chachong(res.data);
         })
         .catch(error => {
           console.error(error);
         });
+    },
+    chachong(list){
+      //Map()是筛选出来的,去重.
+      const res = new Map();
+      console.log(res)
+      let list1 = list.filter((list) => !res.has(list.order_id)&& res.set(list.order_id, 1))
+      this.list = list1
     },
     onDetalOrder(order_id) {
       let routeData = this.$router.resolve({

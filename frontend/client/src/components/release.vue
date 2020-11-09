@@ -112,22 +112,6 @@ export default {
         }
       );
     },
-    // fetchOrder() {
-    //   //拿到查询字段，订单的id后进行axios请求
-    //   var send_info = {
-    //     order_id : this.$route.query.orderId
-    //   }
-    //   console.log(send_info);
-    //   const path = "http://localhost:4000/orders";
-    //   axios.put(path,send_info).then(
-    //     res => {
-    //       this.orderList = res.data;
-    //     },
-    //     error => {
-    //       console.log(error);
-    //     }
-    //   );
-    // },
     onEditOrder(order_id) {
       let routeData = this.$router.resolve({
         path: "/all_orders/edit",

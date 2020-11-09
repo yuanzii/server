@@ -275,17 +275,18 @@ export default {
         res => {
           console.log(res);
           this.orderList = res.data;
-          for (let index = 0; index < this.orderList.length; index++) {
-            this.originalCount[index].product_id = this.orderList[
-              index
-            ].product_id;
-            this.originalCount[index].count = this.orderList[index].count;
-          }
+          this.original_count();
         },
         error => {
           console.log(error);
         }
       );
+    },
+    original_count(){
+      for (let index = 0; index < this.orderList.length; index++) {
+            this.originalCount[index].product_id = this.orderList[index].product_id;
+            this.originalCount[index].count = this.orderList[index].count;
+          }
     },
     limited() {
       const index = this.originalCount.findIndex(
@@ -323,7 +324,9 @@ export default {
             }
             if (this.selected[x].count == 0) {
               this.selected.splice(x, 1);
+              this.orderList = this.selected;
             }
+            this.original_count();
           }
           this.released_waybill();
           this.show_form = true;
