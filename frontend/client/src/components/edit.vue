@@ -203,14 +203,13 @@
       </template>
     </b-modal>
 
+    <pre>editForm = {{ editForm }}</pre>
     <pre>originalCount = {{ originalCount }}</pre>
     <pre>warning = {{ warning }}</pre>
     <pre>show_form = {{ show_form }}</pre>
     <pre>show_message = {{ show_message }}</pre>
     <pre>orderList = {{ orderList }}</pre>
-    <pre>editCount = {{ editCount }}</pre>
     <span>Selected Datas: {{ selected }}</span>
-    <pre>editForm = {{ editForm }}</pre>
   </div>
 </template>
 <script>
@@ -235,25 +234,10 @@ export default {
         price: "",
         subtotal: ""
       },
-      originalCount: [
-        // {},
-        // {},
-        // {},
-        // {}
-        // {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
-        // {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
-        // {},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},
-      ],
-      editCount: [],
+      originalCount: [],
       releasedGood: []
     };
   },
-  // filters: {
-  //   released_count(value) {
-  //     var date = value - this.editForm.count;
-  //     return date;
-  //   }
-  // },
   computed: {},
 
   created() {
@@ -287,70 +271,38 @@ export default {
     },
     original_count() {
       console.log("original_count()");
-      // for (let index = 0; index < this.orderList.length; index++) {
-      //   this.originalCount[index].product_id = this.orderList[index].product_id;
-      //   this.originalCount[index].count = this.orderList[index].count;
-      //   if (this.orderList[index].count == 0) {
-      //     console.log("original_count() => this.orderList[index].count==0");
-      //     this.orderList.splice(index, 1);
-      //   } else {
-      //     console.log("original_count() => orderList.count!=0");
-      //   }
-      // }
-      // const index = this.orderList.findIndex(
-      //   ele => ele.product_id == this.editForm.product_id
-      // );
       for (let index = 0; index < this.orderList.length; index++) {
-        console.log("for")
+        console.log("for");
         const originalCount = {
           product_id: this.orderList[index].product_id,
           count: this.orderList[index].count
         };
-        // this.originalCount.push(originalCount);
+        console.log(originalCount);
 
         const result = this.originalCount.find(
           ele => ele.product_id == this.orderList[index].product_id
         );
+        console.log(result);
         // 检查originalCount，如果有相同的商品就换成最新数量
         if (result) {
           console.log("chongfu");
           this.originalCount.splice(result, 1);
+          console.log(this.originalCount);
           this.originalCount.push(originalCount);
-          
+          console.log(this.originalCount);
         } else {
-          console.log("else")
+          console.log("else");
           this.originalCount.push(originalCount);
+          console.log(this.originalCount);
         }
-        if (this.originalCount[index].count == 0) {
-            console.log("original_count() => this.orderList[index].count==0");
-            this.orderList.splice(index, 1);
-            this.originalCount.splice(index, 1);
-          }
-
-        // const res = new Map();
-        // console.log(res);
-        // let list1 = this.originalCount.filter(
-        //   originalCount => !res.has(originalCount.product_id) && res.set(originalCount.product_id, 1)
-        // );
-        // this.originalCount = list1;
-
-        // if (this.orderList[index].count == 0) {
-        //   console.log("original_count() => this.orderList[index].count==0");
-        //   this.orderList.splice(index, 1);
-        //   this.originalCount.splice(index, 1);
-        // } else {
-        //   console.log("original_count() => orderList.count!=0");
-        // }
-        // const result = this.originalCount.find(
-        //   ele => ele.product_id == this.orderList[index].product_id
-        // );
-        // // 检查originalCount，如果有相同的商品就换成最新数量
-        // if (result) {
-        //   this.originalCount.splice(result, 1);
-        //   this.originalCount.push(originalCount);
-        // } else {
-        // this.originalCount.push(originalCount);
-        // }
+      }
+      const index = this.originalCount.findIndex(ele => ele.count == 0);
+      console.log(index);
+      if (index == -1) {
+        console.log("没有0");
+      } else {
+        this.originalCount.splice(index, 1);
+        this.orderList.splice(index, 1);
       }
     },
     limited() {
@@ -368,6 +320,66 @@ export default {
     view_waybill(evt) {
       evt.preventDefault();
     },
+    // submit_waybill() {
+    //   var send_info = {
+    //     waybill: this.selected
+    //   };
+    //   const path = "http://localhost:4000/waybill";
+    //   axios.post(path, send_info).then(
+    //     res => {
+    //       console.log("submit_waybill()" + res);
+    //       this.$refs.wayBillModal.hide();
+    //       for (let z = 0; z < this.orderList.length; z++) {
+    //         for (let x = 0; x < this.selected.length; x++) {
+    //           if (this.orderList[z].product_id != this.selected[x].product_id) {
+    //               console.log("有更改了，没提交数据")
+    //               this.orderList[z].count = this.originalCount[z].count;
+
+    //             } else {
+    //               console.log("没有");
+    //             }
+    //           // const index = this.orderList.findIndex(
+    //           //   ele => ele.product_id != this.selected[x].product_id
+    //           // );
+    //           // console.log(index);
+    //           // if (index == -1) {
+    //           //   console.log("没有");
+    //           // } else {
+    //           //   this.orderList[index].count = this.originalCount[index].count;
+    //           // }
+    //           for (let y = 0; y < this.originalCount.length; y++) {
+    //             if (
+    //               this.originalCount[y].product_id ==
+    //               this.selected[x].product_id
+    //             ) {
+    //               this.selected[x].count =
+    //                 this.originalCount[y].count - this.selected[x].count;
+    //               //this.selected[x].count 和被改变的orderList.count 是实时变动
+    //             }
+    //           }
+    //           // for (let index = 0; index < this.orderList.length; index++) {
+    //           //   if (this.orderList[index].product_id != this.selected[x].product_id) {
+    //           //     console.log("有更改了，没提交数据")
+    //           //     this.orderList[index].count = this.originalCount[index].count;
+
+    //           //   } else {
+    //           //     console.log("没有");
+    //           //   }
+    //           // }
+    //         }
+    //       }
+
+    //       this.original_count();
+    //       this.released_waybill();
+    //       this.show_form = true;
+    //       this.show_message = true;
+    //       this.initOrder();
+    //     },
+    //     error => {
+    //       console.log(error);
+    //     }
+    //   );
+    // },
     submit_waybill() {
       var send_info = {
         waybill: this.selected
@@ -377,24 +389,24 @@ export default {
         res => {
           console.log("submit_waybill()" + res);
           this.$refs.wayBillModal.hide();
-          for (let x = 0; x < this.selected.length; x++) {
-            for (let y = 0; y < this.originalCount.length; y++) {
-              if (
-                this.originalCount[y].product_id == this.selected[x].product_id
-              ) {
-                this.selected[x].count =
-                  this.originalCount[y].count - this.selected[x].count;
+            for (let x = 0; x < this.selected.length; x++) {
+              for (let y = 0; y < this.originalCount.length; y++) {
+                if (
+                  this.originalCount[y].product_id ==
+                  this.selected[x].product_id
+                ) {
+                  this.selected[x].count =
+                    this.originalCount[y].count - this.selected[x].count;
+                  //this.selected[x].count 和被改变的orderList.count 是实时变动
+                }
               }
-            }
-            // if (this.selected[x].count == 0) {
-            //   this.selected.splice(x, 1);
-            //   // this.orderList = this.selected;
-            // }
           }
+
           this.original_count();
           this.released_waybill();
           this.show_form = true;
           this.show_message = true;
+          this.initOrder();
         },
         error => {
           console.log(error);
@@ -410,7 +422,6 @@ export default {
       axios.put(path, send_info).then(
         res => {
           console.log("released_waybill()" + " " + res);
-          this.original_count();
         },
         error => {
           console.log(error);
@@ -418,7 +429,7 @@ export default {
       );
     },
     initOrder() {
-      this.orderList = [];
+      this.selected = [];
     },
 
     selectAll: function() {
@@ -446,22 +457,6 @@ export default {
         ele => ele.product_id == this.editForm.product_id
       );
       this.orderList[index].count = this.editForm.count;
-
-      // 编辑后的数量
-      const editCount = {
-        product_id: this.editForm.product_id,
-        count: this.editForm.count
-      };
-      const result = this.editCount.find(
-        ele => ele.product_id == this.editForm.product_id
-      );
-      // 检查editCount，如果有相同的商品就换成最新数量
-      if (result) {
-        this.editCount.splice(result, 1);
-        this.editCount.push(editCount);
-      } else {
-        this.editCount.push(editCount);
-      }
     },
     onCancelUpdate(evt) {
       evt.preventDefault();
