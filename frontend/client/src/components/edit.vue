@@ -332,7 +332,7 @@ export default {
     //       for (let z = 0; z < this.orderList.length; z++) {
     //         for (let x = 0; x < this.selected.length; x++) {
     //           if (this.orderList[z].product_id != this.selected[x].product_id) {
-    //               console.log("有更改了，没提交数据")
+    //               console.log("有更改了，但是没提交数据")
     //               this.orderList[z].count = this.originalCount[z].count;
 
     //             } else {
@@ -345,6 +345,7 @@ export default {
     //           // if (index == -1) {
     //           //   console.log("没有");
     //           // } else {
+    //           //   console.log("有更改了，但是没提交数据")
     //           //   this.orderList[index].count = this.originalCount[index].count;
     //           // }
     //           for (let y = 0; y < this.originalCount.length; y++) {
@@ -401,7 +402,6 @@ export default {
                 }
               }
           }
-
           this.original_count();
           this.released_waybill();
           this.show_form = true;
