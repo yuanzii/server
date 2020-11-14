@@ -29,8 +29,8 @@
     <div class="container-fluid">
       <div class="row">
         <div
-          class="container pt-4 col-md-12 "
-          style="box-shadow: 0 0 10px 0 rgba(0, 0, 0, .1);"
+          class="container pt-4 col-md-12"
+          style="box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1)"
         >
           <form v-if="show_message">
             <h1>订单提交完成✔</h1>
@@ -61,27 +61,28 @@
             </template>
             <table
               class="table container-fluid"
-              style="word-break:break-all; word-wrap:break-all;"
+              style="word-break: break-all; word-wrap: break-all"
             >
               <thead>
                 <tr>
                   <b-row
                     class="form-row"
-                    style="word-break:break-all; word-wrap:break-all;"
+                    style="word-break: break-all; word-wrap: break-all"
                   >
-                    <th style="width:5%;">
+                    <th style="width: 5%">
                       <input
                         type="checkbox"
                         @change="selectAll"
                         v-model="allSelected"
                       />
                     </th>
-                    <th style="width:10%;">ID</th>
-                    <th style="width:25%;">P_Name</th>
-                    <th style="width:30%;">P_Detal</th>
-                    <th style="width:10%;">Count</th>
-                    <th style="width:10%;">Price</th>
-                    <th style="width:10%;"></th>
+                    <th style="width: 10%">ID</th>
+                    <th style="width: 20%">P_Name</th>
+                    <th style="width: 25%">P_Detal</th>
+                    <th style="width: 10%">EditCount</th>
+                    <th style="width: 10%">Price</th>
+                    <th style="width: 10%">Count</th>
+                    <th style="width: 10%"></th>
                   </b-row>
                 </tr>
               </thead>
@@ -89,10 +90,10 @@
                 <tr
                   v-for="(product, index) in orderList"
                   :key="index"
-                  style="white-space:nowrap;overflow:hidden"
+                  style="white-space: nowrap; overflow: hidden"
                 >
                   <b-row class="form-row">
-                    <td style="width:5%;">
+                    <td style="width: 5%">
                       <input
                         type="checkbox"
                         v-model="selected"
@@ -102,13 +103,14 @@
                       <!-- :value="product"——>点击checkbox,把product装到selected[]里
                       或者：selected[]里有一个product == 点击了该checkbox,这就是[全选]的原理-->
                     </td>
-                    <td style="width:10%;">{{ product.product_id }}</td>
-                    <td style="width:25%;">{{ product.product_name }}</td>
-                    <td style="width:30%;">{{ product.product_detal }}</td>
-                    <td style="width:10%;">{{ product.count }}</td>
-                    <td style="width:10%;">{{ product.price }}</td>
+                    <td style="width: 10%">{{ product.product_id }}</td>
+                    <td style="width: 20%">{{ product.product_name }}</td>
+                    <td style="width: 25%">{{ product.product_detal }}</td>
+                    <td style="width: 10%">{{ product.count }}</td>
+                    <td style="width: 10%">{{ product.price }}</td>
+                    <td style="width: 10%">{{ originalCount[index].count }}</td>
                     <td>
-                      <div style="width:10%;" class="btn-group" role="group">
+                      <div style="width: 10%" class="btn-group" role="group">
                         <button
                           type="button"
                           class="btn btn-warning btn-sm"
@@ -166,7 +168,7 @@
         </div>
         <table
           class="table container-fluid"
-          style="word-break:break-all; word-wrap:break-all;"
+          style="word-break: break-all; word-wrap: break-all"
         >
           <thead>
             <tr>
@@ -232,10 +234,10 @@ export default {
         product_detal: "",
         count: "",
         price: "",
-        subtotal: ""
+        subtotal: "",
       },
       originalCount: [],
-      releasedGood: []
+      releasedGood: [],
     };
   },
   computed: {},
@@ -245,13 +247,13 @@ export default {
   },
   // 监听data数据，数据改变时触发
   watch: {
-    selected: function() {
+    selected: function () {
       if (this.selected.length == this.orderList.length) {
         this.allSelected = true;
       } else {
         this.allSelected = false;
       }
-    }
+    },
   },
   methods: {
     fetchOrder() {
@@ -259,12 +261,12 @@ export default {
       var order_id = this.$route.query.orderId;
       const path = `http://localhost:4000/orders/${order_id}`;
       axios.get(path).then(
-        res => {
+        (res) => {
           console.log("fetchOrder");
           this.orderList = res.data;
           this.original_count();
         },
-        error => {
+        (error) => {
           console.log(error);
         }
       );
@@ -272,42 +274,42 @@ export default {
     original_count() {
       console.log("original_count()");
       for (let index = 0; index < this.orderList.length; index++) {
-        console.log("for");
+        console.log("orderList" + index);
         const originalCount = {
           product_id: this.orderList[index].product_id,
-          count: this.orderList[index].count
+          count: this.orderList[index].count,
         };
         console.log(originalCount);
 
         const result = this.originalCount.find(
-          ele => ele.product_id == this.orderList[index].product_id
+          (ele) => ele.product_id == this.orderList[index].product_id
         );
         console.log(result);
         // 检查originalCount，如果有相同的商品就换成最新数量
         if (result) {
-          console.log("chongfu");
           this.originalCount.splice(result, 1);
-          console.log(this.originalCount);
           this.originalCount.push(originalCount);
-          console.log(this.originalCount);
         } else {
-          console.log("else");
           this.originalCount.push(originalCount);
-          console.log(this.originalCount);
         }
       }
-      const index = this.originalCount.findIndex(ele => ele.count == 0);
-      console.log(index);
-      if (index == -1) {
-        console.log("没有0");
-      } else {
-        this.originalCount.splice(index, 1);
-        this.orderList.splice(index, 1);
-      }
+      // for (let index = 0; index < this.originalCount.length; index++) {
+      //   console.log(index)
+      //   const result = this.originalCount.find((ele) => ele.count == 0);
+      //   if (result) {
+      //     this.orderList.splice(result, 1);
+      //   }
+      // }
+      // if(this.originalCount[index].count == 0) {
+      //   this.orderList.splice(index, 1);
+      //   console.log(index +"==0")
+      //   // this.originalCount.splice(index, 1);
+
+      // }
     },
     limited() {
       const index = this.originalCount.findIndex(
-        ele => ele.product_id == this.editForm.product_id
+        (ele) => ele.product_id == this.editForm.product_id
       );
       if (this.editForm.count > this.originalCount[index].count) {
         this.warning = true;
@@ -330,34 +332,27 @@ export default {
     //       console.log("submit_waybill()" + res);
     //       this.$refs.wayBillModal.hide();
     //       for (let z = 0; z < this.orderList.length; z++) {
+    //         console.log("orderList = " + z);
     //         for (let x = 0; x < this.selected.length; x++) {
-    //           if (this.orderList[z].product_id != this.selected[x].product_id) {
-    //               console.log("有更改了，但是没提交数据")
-    //               this.orderList[z].count = this.originalCount[z].count;
-
-    //             } else {
-    //               console.log("没有");
-    //             }
-    //           // const index = this.orderList.findIndex(
-    //           //   ele => ele.product_id != this.selected[x].product_id
-    //           // );
-    //           // console.log(index);
-    //           // if (index == -1) {
-    //           //   console.log("没有");
-    //           // } else {
-    //           //   console.log("有更改了，但是没提交数据")
-    //           //   this.orderList[index].count = this.originalCount[index].count;
-    //           // }
-    //           for (let y = 0; y < this.originalCount.length; y++) {
-    //             if (
-    //               this.originalCount[y].product_id ==
-    //               this.selected[x].product_id
-    //             ) {
-    //               this.selected[x].count =
-    //                 this.originalCount[y].count - this.selected[x].count;
-    //               //this.selected[x].count 和被改变的orderList.count 是实时变动
-    //             }
+    //           console.log("selected = " + x);
+    //           const index =
+    //             this.orderList[z].product_id != this.selected[x].product_id;
+    //           console.log(index);
+    //           if (index) {
+    //             console.log("没有选checkbox");
+    //             this.orderList[z].count = this.originalCount[z].count;
     //           }
+    //           // else {}
+    //           // for (let y = 0; y < this.originalCount.length; y++) {
+    //           //   if (
+    //           //     this.originalCount[y].product_id ==
+    //           //     this.selected[x].product_id
+    //           //   ) {
+    //           //     this.selected[x].count =
+    //           //       this.originalCount[y].count - this.selected[x].count;
+    //           //     //this.selected[x].count 和被改变的orderList.count 是实时变动
+    //           //   }
+    //           // }
     //           // for (let index = 0; index < this.orderList.length; index++) {
     //           //   if (this.orderList[index].product_id != this.selected[x].product_id) {
     //           //     console.log("有更改了，没提交数据")
@@ -369,7 +364,22 @@ export default {
     //           // }
     //         }
     //       }
-
+    //       console.log("选择checkbox");
+    //       for (let y = 0; y < this.originalCount.length; y++) {
+    //         console.log("originalCount = " + y);
+    //         const abc = this.selected.findIndex(
+    //           ele => ele.product_id == this.originalCount[y].product_id
+    //         );
+    //         console.log(abc);
+    //         if (abc != -1) {
+    //           console.log(this.originalCount[y].count)
+    //           console.log(this.selected[abc].count)
+    //           const atleaset = this.originalCount[y].count - this.selected[abc].count;
+    //           this.selected[abc].count = atleaset
+    //           console.log(this.selected[abc].count);
+    //           //this.selected[x].count 和被改变的orderList.count 是实时变动
+    //         }
+    //       }
     //       this.original_count();
     //       this.released_waybill();
     //       this.show_form = true;
@@ -383,47 +393,98 @@ export default {
     // },
     submit_waybill() {
       var send_info = {
-        waybill: this.selected
+        waybill: this.selected,
       };
       const path = "http://localhost:4000/waybill";
       axios.post(path, send_info).then(
-        res => {
+        (res) => {
           console.log("submit_waybill()" + res);
           this.$refs.wayBillModal.hide();
-            for (let x = 0; x < this.selected.length; x++) {
-              for (let y = 0; y < this.originalCount.length; y++) {
-                if (
-                  this.originalCount[y].product_id ==
-                  this.selected[x].product_id
-                ) {
-                  this.selected[x].count =
-                    this.originalCount[y].count - this.selected[x].count;
-                  //this.selected[x].count 和被改变的orderList.count 是实时变动
-                }
-              }
+
+          for (let y = 0; y < this.originalCount.length; y++) {
+            console.log("originalCount = " + y);
+
+            const abc = this.selected.findIndex(
+              // 不选择checkbox
+              (ele) => ele.product_id == this.originalCount[y].product_id
+            );
+            console.log(abc);
+            if (abc == -1) {
+              console.log("不选择checkbox");
+              this.orderList[y].count = this.originalCount[y].count;
+            } else {
+              console.log("checkbox");
+              this.selected[abc].count =
+                this.originalCount[y].count - this.selected[abc].count;
+            }
           }
+          for (let i = 0; i < this.originalCount.length; i++) {
+            console.log(i);
+            const index = this.orderList.findIndex((ele) => ele.count == 0);
+            if (index==-1) {
+              console.log("没有")
+            }else{
+              console.log(index)
+              this.orderList.splice(index, 1);
+              this.originalCount.splice(index, 1);
+            }
+          }
+
           this.original_count();
           this.released_waybill();
           this.show_form = true;
           this.show_message = true;
           this.initOrder();
         },
-        error => {
+        (error) => {
           console.log(error);
         }
       );
     },
+    // submit_waybill() {
+    //   var send_info = {
+    //     waybill: this.selected
+    //   };
+    //   const path = "http://localhost:4000/waybill";
+    //   axios.post(path, send_info).then(
+    //     res => {
+    //       console.log("submit_waybill()" + res);
+    //       this.$refs.wayBillModal.hide();
+    //         for (let x = 0; x < this.selected.length; x++) {
+    //           for (let y = 0; y < this.originalCount.length; y++) {
+    //             if (
+    //               this.originalCount[y].product_id ==
+    //               this.selected[x].product_id
+    //             ) {
+    //               this.selected[x].count =
+    //                 this.originalCount[y].count - this.selected[x].count;
+    //                 break
+    //               //this.selected[x].count 和被改变的orderList.count 是实时变动
+    //             }
+    //           }
+    //       }
+    //       this.original_count();
+    //       this.released_waybill();
+    //       this.show_form = true;
+    //       this.show_message = true;
+    //       this.initOrder();
+    //     },
+    //     error => {
+    //       console.log(error);
+    //     }
+    //   );
+    // },
     released_waybill() {
       var order_id = this.$route.query.orderId;
       var send_info = {
-        released_waybill: this.orderList
+        released_waybill: this.orderList,
       };
       const path = `http://localhost:4000/orders/${order_id}`;
       axios.put(path, send_info).then(
-        res => {
+        (res) => {
           console.log("released_waybill()" + " " + res);
         },
-        error => {
+        (error) => {
           console.log(error);
         }
       );
@@ -432,7 +493,7 @@ export default {
       this.selected = [];
     },
 
-    selectAll: function() {
+    selectAll: function () {
       this.selected = [];
 
       if (this.allSelected) {
@@ -454,7 +515,7 @@ export default {
       evt.preventDefault();
       this.$refs.editProductModal.hide();
       const index = this.orderList.findIndex(
-        ele => ele.product_id == this.editForm.product_id
+        (ele) => ele.product_id == this.editForm.product_id
       );
       this.orderList[index].count = this.editForm.count;
     },
@@ -462,7 +523,7 @@ export default {
       evt.preventDefault();
       this.warning = false;
       this.$refs.editProductModal.hide();
-    }
-  }
+    },
+  },
 };
 </script>
