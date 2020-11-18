@@ -78,7 +78,7 @@
       </div>
     </div>
 
-    <pre>orderList = {{ orderList }}</pre>
+    <!-- <pre>orderList = {{ orderList }}</pre> -->
   </div>
 </template>
 <script>
@@ -113,13 +113,12 @@ export default {
       );
     },
     onEditOrder(order_id) {
-      let routeData = this.$router.resolve({
+      this.$router.push({
         path: "/all_orders/edit",
         query: {
           orderId: order_id
         }
       });
-      window.open(routeData.href, "_blank");
     }
   }
 };

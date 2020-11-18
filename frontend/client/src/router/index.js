@@ -43,7 +43,7 @@ const routes = [
     name: "release",
     component: release,
     meta: {
-      keepAlive: true
+      keepAlive: false
     }
   },
   {

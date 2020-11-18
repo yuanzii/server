@@ -237,7 +237,6 @@ export default {
         subtotal: "",
       },
       originalCount: [],
-      releasedGood: [],
     };
   },
   computed: {},
@@ -293,19 +292,6 @@ export default {
           this.originalCount.push(originalCount);
         }
       }
-      // for (let index = 0; index < this.originalCount.length; index++) {
-      //   console.log(index)
-      //   const result = this.originalCount.find((ele) => ele.count == 0);
-      //   if (result) {
-      //     this.orderList.splice(result, 1);
-      //   }
-      // }
-      // if(this.originalCount[index].count == 0) {
-      //   this.orderList.splice(index, 1);
-      //   console.log(index +"==0")
-      //   // this.originalCount.splice(index, 1);
-
-      // }
     },
     limited() {
       const index = this.originalCount.findIndex(
@@ -322,75 +308,6 @@ export default {
     view_waybill(evt) {
       evt.preventDefault();
     },
-    // submit_waybill() {
-    //   var send_info = {
-    //     waybill: this.selected
-    //   };
-    //   const path = "http://localhost:4000/waybill";
-    //   axios.post(path, send_info).then(
-    //     res => {
-    //       console.log("submit_waybill()" + res);
-    //       this.$refs.wayBillModal.hide();
-    //       for (let z = 0; z < this.orderList.length; z++) {
-    //         console.log("orderList = " + z);
-    //         for (let x = 0; x < this.selected.length; x++) {
-    //           console.log("selected = " + x);
-    //           const index =
-    //             this.orderList[z].product_id != this.selected[x].product_id;
-    //           console.log(index);
-    //           if (index) {
-    //             console.log("没有选checkbox");
-    //             this.orderList[z].count = this.originalCount[z].count;
-    //           }
-    //           // else {}
-    //           // for (let y = 0; y < this.originalCount.length; y++) {
-    //           //   if (
-    //           //     this.originalCount[y].product_id ==
-    //           //     this.selected[x].product_id
-    //           //   ) {
-    //           //     this.selected[x].count =
-    //           //       this.originalCount[y].count - this.selected[x].count;
-    //           //     //this.selected[x].count 和被改变的orderList.count 是实时变动
-    //           //   }
-    //           // }
-    //           // for (let index = 0; index < this.orderList.length; index++) {
-    //           //   if (this.orderList[index].product_id != this.selected[x].product_id) {
-    //           //     console.log("有更改了，没提交数据")
-    //           //     this.orderList[index].count = this.originalCount[index].count;
-
-    //           //   } else {
-    //           //     console.log("没有");
-    //           //   }
-    //           // }
-    //         }
-    //       }
-    //       console.log("选择checkbox");
-    //       for (let y = 0; y < this.originalCount.length; y++) {
-    //         console.log("originalCount = " + y);
-    //         const abc = this.selected.findIndex(
-    //           ele => ele.product_id == this.originalCount[y].product_id
-    //         );
-    //         console.log(abc);
-    //         if (abc != -1) {
-    //           console.log(this.originalCount[y].count)
-    //           console.log(this.selected[abc].count)
-    //           const atleaset = this.originalCount[y].count - this.selected[abc].count;
-    //           this.selected[abc].count = atleaset
-    //           console.log(this.selected[abc].count);
-    //           //this.selected[x].count 和被改变的orderList.count 是实时变动
-    //         }
-    //       }
-    //       this.original_count();
-    //       this.released_waybill();
-    //       this.show_form = true;
-    //       this.show_message = true;
-    //       this.initOrder();
-    //     },
-    //     error => {
-    //       console.log(error);
-    //     }
-    //   );
-    // },
     submit_waybill() {
       var send_info = {
         waybill: this.selected,
@@ -441,39 +358,6 @@ export default {
         }
       );
     },
-    // submit_waybill() {
-    //   var send_info = {
-    //     waybill: this.selected
-    //   };
-    //   const path = "http://localhost:4000/waybill";
-    //   axios.post(path, send_info).then(
-    //     res => {
-    //       console.log("submit_waybill()" + res);
-    //       this.$refs.wayBillModal.hide();
-    //         for (let x = 0; x < this.selected.length; x++) {
-    //           for (let y = 0; y < this.originalCount.length; y++) {
-    //             if (
-    //               this.originalCount[y].product_id ==
-    //               this.selected[x].product_id
-    //             ) {
-    //               this.selected[x].count =
-    //                 this.originalCount[y].count - this.selected[x].count;
-    //                 break
-    //               //this.selected[x].count 和被改变的orderList.count 是实时变动
-    //             }
-    //           }
-    //       }
-    //       this.original_count();
-    //       this.released_waybill();
-    //       this.show_form = true;
-    //       this.show_message = true;
-    //       this.initOrder();
-    //     },
-    //     error => {
-    //       console.log(error);
-    //     }
-    //   );
-    // },
     released_waybill() {
       var order_id = this.$route.query.orderId;
       var send_info = {

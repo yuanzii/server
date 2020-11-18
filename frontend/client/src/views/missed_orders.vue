@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container-fluid col-6 pb-3 " v-for="(products, index) in this.orders.missed_orders"
+    <div class="container-fluid col-6 pb-3 " v-for="(products, index) in this.list"
                     :key="index">
       <div class="row">
         <div
@@ -12,20 +12,20 @@
             <div class="form-row">
               <div class="form-row col-md-6">
                 <p>订单编号：</p>
-                <p>{{ products[0].order_id }}</p>
+                <p>{{ products.waybill_id }}</p>
               </div>
             </div>
             <div class="form-row">
               <div class="form-row col-md-6">
                 <p>创建日期：</p>
-                <p>{{ products[0].datetime }}</p>
+                <p>{{ products.order_create_time | formatDate }}</p>
               </div>
             </div>
             <div class="form-row">
               <div class="form-row col-12">
                 <p>客户：</p>
-                <p>{{ products[0].customer_id }}</p>
-                <p>{{ products[0].customer_name }}</p>
+                <p>{{ products.customer_id }}</p>
+                <p>{{ products.customer_name }}</p>
               </div>
             </div>
             <div class="form-group pt-3">
@@ -62,52 +62,97 @@
                   </tr>
                 </tbody>
               </table>
-              <button
+              <!-- <button
                 type="submit"
                 class="btn btn-warning mb-4 mr-2 col-2 float-right"
                 @click="onMissedOrder"
               >
                 打印
-              </button>
+              </button> -->
             </div>
           </form>
         </div>
       </div>
     </div>
     <p>hello</p>
-    <pre>missed_orders = {{ missed }}</pre>
-    <b-button
+    <pre>missed_orders = {{ list }}</pre>
+    <!-- <b-button
       type="button"
       class="btn btn-sm btn-danger"
       @click="onReleaseOrder"
       >剩余订单
-    </b-button>
+    </b-button> -->
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { formatDate } from "../router/dateFilter";
+import axios from "axios";
 export default {
   data() {
     return {
-      missed: []
+      list: []
     };
   },
-  computed: {
-    ...mapState({
-      orders: state => state.orders.missed_orders
-    })
+  filters: {
+    formatDate(datetime) {
+      var date = new Date(datetime);
+      return formatDate(date, "yyyy-MM-dd hh:mm:ss");
+    }
   },
-  created() {
+  computed: {},
+  created() {},
+  // 实例被激活时使用，用于重复激活一个实例的时候
+  // 配合keep-alive标签使用!
+  activated: function() {
+    console.log("activate");
+    this.load_orders();
+  },
+  // 实例没有被激活时
+  deactivated: function() {
+    console.log("deactivated");
   },
   methods: {
-    onReleaseOrder() {
-      this.missed = this.orders.missed_orders;
-      console.log("aa" + this.missed);
+    load_orders() {
+      console.log("load_orders");
+      const path = "http://localhost:4000/waybill";
+      axios
+        .get(path)
+        .then(res => {
+          console.log(res.data)
+          this.list = res.data;
+          // console.log(res.data);
+          // this.chachong();
+        })
+        .catch(error => {
+          console.error(error);
+        });
     },
-    onMissedOrder(){
-
-    },
+    // chachong(list){
+    //   //Map()是筛选出来的,去重.
+    //   const res = new Map();
+    //   console.log(res)
+    //   let list1 = list.filter((list) => !res.has(list.order_id)&& res.set(list.order_id, 1))
+    //   this.list = list1
+    // },
+    // onDetalOrder(order_id) {
+    //   let routeData = this.$router.resolve({
+    //     path: "/all_orders/detail",
+    //     query: {
+    //       orderId: order_id
+    //     }
+    //   });
+    //   window.open(routeData.href, "_blank");
+    // },
+    // onReleaseOrder(order_id) {
+    //   let routeData = this.$router.resolve({
+    //     path: "/all_orders/release",
+    //     query: {
+    //       orderId: order_id
+    //     }
+    //   });
+    //   window.open(routeData.href, "_blank");
+    // }
   }
 };
 </script>
